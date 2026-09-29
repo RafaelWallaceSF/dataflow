@@ -2,7 +2,7 @@ import {computed, readonly, ref, watch} from 'vue'
 import {acceptHMRUpdate, defineStore} from 'pinia'
 
 import {AuthenticatedHTTPFactory, HTTPFactory} from '@/helpers/fetcher'
-import {getBrowserLanguage, i18n, setLanguage} from '@/i18n'
+import {DEFAULT_LANGUAGE, i18n, setLanguage} from '@/i18n'
 import {objectToSnakeCase} from '@/helpers/case'
 import UserModel, {getDisplayName, fetchAvatarBlobUrl, invalidateAvatarCache} from '@/models/user'
 import AvatarService from '@/services/avatar'
@@ -240,7 +240,7 @@ export const useAuthStore = defineStore('auth', () => {
 		setIsLoading(true)
 		
 		if (!language) {
-			language = i18n.global.locale.value ?? getBrowserLanguage()
+			language = i18n.global.locale.value ?? DEFAULT_LANGUAGE
 		}
 		
 		try {
@@ -251,7 +251,7 @@ export const useAuthStore = defineStore('auth', () => {
 			return await login(credentials)
 		} catch (e) {
 			if (e.response?.data?.code === 2002 && e.response?.data?.invalid_fields[0]?.startsWith('language:')) {
-				return register(credentials, 'en')
+				return register(credentials, DEFAULT_LANGUAGE)
 			}
 
 			if (e.response?.data?.message) {
@@ -436,9 +436,7 @@ export const useAuthStore = defineStore('auth', () => {
 				...(info.value?.exp && {exp: info.value?.exp}),
 			})
 
-			if (newUser.settings.language) {
-				await setLanguage(newUser.settings.language)
-			}
+			await setLanguage(DEFAULT_LANGUAGE)
 
 			setUser(newUser)
 			updateLastUserRefresh()

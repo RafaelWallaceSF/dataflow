@@ -1001,6 +1001,34 @@ func (err ErrTaskAttachmentIsTooLarge) HTTPError() web.HTTPError {
 	}
 }
 
+// ErrProjectFileDoesNotExist represents an error where a project file was not found.
+type ErrProjectFileDoesNotExist struct {
+	ProjectID int64
+	FileID    int64
+}
+
+// IsErrProjectFileDoesNotExist checks if an error is ErrProjectFileDoesNotExist.
+func IsErrProjectFileDoesNotExist(err error) bool {
+	_, ok := err.(ErrProjectFileDoesNotExist)
+	return ok
+}
+
+func (err ErrProjectFileDoesNotExist) Error() string {
+	return fmt.Sprintf("Project file does not exist [ProjectID: %d, FileID: %d]", err.ProjectID, err.FileID)
+}
+
+// ErrCodeProjectFileDoesNotExist holds the unique world-error code of this error.
+const ErrCodeProjectFileDoesNotExist = 4013
+
+// HTTPError holds the http error description.
+func (err ErrProjectFileDoesNotExist) HTTPError() web.HTTPError {
+	return web.HTTPError{
+		HTTPCode: http.StatusNotFound,
+		Code:     ErrCodeProjectFileDoesNotExist,
+		Message:  "This project file does not exist.",
+	}
+}
+
 // ErrInvalidSortParam represents an error where the provided sort param is invalid
 type ErrInvalidSortParam struct {
 	SortBy string

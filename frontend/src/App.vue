@@ -113,7 +113,7 @@ watch(accountDeletionConfirm, async (accountDeletionConfirm) => {
 	authStore.refreshUserInfo()
 }, { immediate: true })
 
-setLanguage(authStore.settings.language ?? DEFAULT_LANGUAGE)
+setLanguage(DEFAULT_LANGUAGE)
 useColorScheme()
 useTimeTrackingFavicon()
 </script>

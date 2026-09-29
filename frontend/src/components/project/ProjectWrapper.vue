@@ -39,9 +39,15 @@
 							v-for="view in views"
 							:key="view.id"
 							:to="getViewRoute(view)"
-							:class="{'is-active': view.id === viewId}"
+							:class="{'is-active': view.id === viewId && route.query.documents !== '1'}"
 						>
 							{{ getViewTitle(view) }}
+						</DropdownItem>
+						<DropdownItem
+							:to="getDocumentsRoute()"
+							:class="{'is-active': route.query.documents === '1'}"
+						>
+							{{ t('project.documents.shortTitle') }}
 						</DropdownItem>
 					</div>
 				</template>
@@ -59,11 +65,19 @@
 					v-for="view in views"
 					:key="view.id"
 					class="switch-view-button"
-					:class="{'is-active': view.id === viewId}"
+					:class="{'is-active': view.id === viewId && route.query.documents !== '1'}"
 					:to="getViewRoute(view)"
 					:tabindex="isOverflowing ? -1 : undefined"
 				>
 					{{ getViewTitle(view) }}
+				</BaseButton>
+				<BaseButton
+					class="switch-view-button"
+					:class="{'is-active': route.query.documents === '1'}"
+					:to="getDocumentsRoute()"
+					:tabindex="isOverflowing ? -1 : undefined"
+				>
+					{{ t('project.documents.shortTitle') }}
 				</BaseButton>
 			</div>
 			<slot name="header" />
@@ -84,6 +98,7 @@
 
 <script setup lang="ts">
 import {computed, ref, watch, nextTick, onMounted} from 'vue'
+import {useRoute} from 'vue-router'
 import {useResizeObserver} from '@vueuse/core'
 import {useI18n} from 'vue-i18n'
 
@@ -115,6 +130,7 @@ const {t} = useI18n()
 const baseStore = useBaseStore()
 const projectStore = useProjectStore()
 const viewFiltersStore = useViewFiltersStore()
+const route = useRoute()
 
 const switchViewContainerRef = ref<HTMLElement>()
 const switchViewRef = ref<HTMLElement>()
@@ -161,7 +177,7 @@ watch(views, () => {
 	nextTick(() => checkOverflow())
 })
 
-function getViewTitle(view: IProjectView) {
+function getViewTitle(view: IProjectView | Readonly<IProjectView>) {
 	switch (view.title) {
 		case 'List':
 			return t('project.list.title')
@@ -176,12 +192,20 @@ function getViewTitle(view: IProjectView) {
 	return view.title
 }
 
-function getViewRoute(view: IProjectView) {
+function getViewRoute(view: IProjectView | Readonly<IProjectView>) {
 	const storedQuery = viewFiltersStore.getViewQuery(view.id)
 	return {
 		name: 'project.view',
 		params: {projectId: props.projectId, viewId: view.id},
 		query: storedQuery,
+	}
+}
+
+function getDocumentsRoute() {
+	return {
+		name: 'project.view',
+		params: {projectId: props.projectId, viewId: props.viewId},
+		query: {documents: '1'},
 	}
 }
 </script>

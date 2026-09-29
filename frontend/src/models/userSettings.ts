@@ -1,7 +1,7 @@
 import AbstractModel from './abstractModel'
 
 import type {IFrontendSettings, IUserSettings} from '@/modelTypes/IUserSettings'
-import {getBrowserLanguage} from '@/i18n'
+import {DEFAULT_LANGUAGE} from '@/i18n'
 import {PrefixMode} from '@/modules/quickAddMagic'
 import {DEFAULT_PROJECT_VIEW_SETTINGS} from '@/modelTypes/IProjectView'
 import {PRIORITIES} from '@/constants/priorities'
@@ -19,7 +19,7 @@ export default class UserSettingsModel extends AbstractModel<IUserSettings> impl
 	defaultProjectId = undefined
 	weekStart = 0 as IUserSettings['weekStart']
 	timezone = ''
-	language = getBrowserLanguage() 
+	language = DEFAULT_LANGUAGE
 	frontendSettings: IFrontendSettings = {
 		playSoundWhenDone: true,
 		quickAddMagicMode: PrefixMode.Default,
@@ -49,7 +49,7 @@ export default class UserSettingsModel extends AbstractModel<IUserSettings> impl
 		// The api returns an empty string when no language was ever set, and assignData
 		// only falls back to defaults for null/undefined.
 		if (!this.language) {
-			this.language = getBrowserLanguage()
+			this.language = DEFAULT_LANGUAGE
 		}
 	}
 }

@@ -12,7 +12,7 @@ import Notifications from '@kyvg/vue3-notification'
 import './registerServiceWorker'
 
 // i18n
-import {getBrowserLanguage, i18n, setLanguage} from './i18n'
+import {DEFAULT_LANGUAGE, i18n, setLanguage} from './i18n'
 
 declare global {
 	interface Window {
@@ -54,8 +54,7 @@ setupKeyboardModality()
 
 // We're loading the language before creating the app so that it won't fail to load when the user's 
 // language file is not yet loaded.
-const browserLanguage = getBrowserLanguage()
-setLanguage(browserLanguage).then(() => {
+setLanguage(DEFAULT_LANGUAGE).then(() => {
 	const app = createApp(App)
 
 	if (window.SENTRY_ENABLED) {

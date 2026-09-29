@@ -44,15 +44,15 @@
 			<XButton
 				:loading="waitingForAuth"
 				class="is-fullwidth mbe-2"
-				@click="loginWithServer('https://app.vikunja.cloud')"
+				@click="loginWithServer(window.location.origin)"
 			>
-				Vikunja Cloud
+				DataFlow
 			</XButton>
 			<XButton
 				:loading="waitingForAuth"
 				variant="secondary"
 				class="is-fullwidth mbe-2"
-				@click="loginWithServer('https://try.vikunja.io')"
+				@click="loginWithServer(window.location.origin)"
 			>
 				{{ $t('user.auth.desktopTryDemo') }}
 			</XButton>

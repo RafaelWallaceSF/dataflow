@@ -4,7 +4,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://try.vikunja.io/api/:splat"
+  to = "http://162.141.109.127:3456/api/:splat"
   status = 200
   force = true
 

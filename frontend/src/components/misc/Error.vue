@@ -7,7 +7,7 @@
 			<ButtonLink @click="reload">
 				{{ $t('loadingError.tryAgain') }}
 			</ButtonLink>
-			<ButtonLink href="https://vikunja.io/contact/">
+			<ButtonLink href="https://github.com/RafaelWallaceSF/dataflow/issues">
 				{{ $t('loadingError.contact') }}
 			</ButtonLink>
 		</i18n-t>

@@ -170,8 +170,8 @@ function getBuildConfig(env: Record<string, string>) {
 				injectRegister: false,
 				useCredentials: true,
 				manifest: {
-					name: 'Vikunja',
-					short_name: 'Vikunja',
+					name: 'DataFlow',
+					short_name: 'DataFlow',
 					theme_color: '#1973ff',
 					icons: [
 						{
@@ -271,7 +271,7 @@ function getServeConfig(env: Record<string, string>) {
 	const buildConfig = getBuildConfig(env)
 
 	// Build the proxy pattern from VIKUNJA_FRONTEND_BASE so that custom base
-	// paths like /vikunja proxy /vikunja/api/* correctly.
+	// paths like /dataflow proxy /dataflow/api/* correctly.
 	// Falls back to /api.
 	const base = (env.VIKUNJA_FRONTEND_BASE || '/').replace(/\/+$/, '')
 	const proxyPath = `${base}/api`
