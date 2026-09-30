@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="login-page">
 		<Message
 			v-if="confirmedEmailSuccess"
 			variant="success"
@@ -22,22 +22,26 @@
 			v-if="!isDesktop && (localAuthEnabled || ldapAuthEnabled)"
 			id="loginform"
 			@submit.prevent="submit"
+			class="login-form-content"
 		>
-			<FormField
-				id="username"
-				ref="usernameRef"
-				v-focus
-				:label="$t('user.auth.usernameEmail')"
-				name="username"
-				:placeholder="$t('user.auth.usernamePlaceholder')"
-				required
-				type="text"
-				autocomplete="username"
-				:error="usernameValid ? null : $t('user.auth.usernameRequired')"
-				@keyup.enter="submit"
-				@focusout="validateUsernameField()"
-			/>
-			<div class="field">
+			<div class="field-wrapper mbe-4">
+				<label class="label">{{ $t('user.auth.usernameEmail') }}</label>
+				<FormField
+					id="username"
+					ref="usernameRef"
+					v-focus
+					name="username"
+					:placeholder="$t('user.auth.usernamePlaceholder')"
+					required
+					type="text"
+					autocomplete="username"
+					:error="usernameValid ? null : $t('user.auth.usernameRequired')"
+					@keyup.enter="submit"
+					@focusout="validateUsernameField()"
+				/>
+			</div>
+			
+			<div class="field-wrapper mbe-5">
 				<div class="label-with-link">
 					<label
 						class="label"
@@ -58,6 +62,7 @@
 					@submit="submit"
 				/>
 			</div>
+			
 			<FormField
 				v-if="needsTotpPasscode"
 				id="totpPasscode"
@@ -71,26 +76,31 @@
 				inputmode="numeric"
 				@keyup.enter="submit"
 			/>
-			<FormCheckbox
-				v-model="rememberMe"
-				:label="$t('user.auth.remember')"
-			/>
+			
+			<div class="checkbox-wrapper mbe-5">
+				<FormCheckbox
+					v-model="rememberMe"
+					:label="$t('user.auth.remember')"
+				/>
+			</div>
 
 			<XButton
 				:loading="isLoading"
+				class="is-fullwidth login-action-btn"
 				@click="submit"
 			>
 				{{ $t('user.auth.login') }}
+				<i class="fas fa-arrow-right icon-right"></i>
 			</XButton>
+			
 			<p
 				v-if="registrationEnabled"
-				class="mbs-2"
+				class="create-account-wrapper mbs-5"
 			>
 				{{ $t('user.auth.noAccountYet') }}
 				<RouterLink
 					:to="{ name: 'user.register' }"
-					type="secondary"
-					class="inline-link"
+					class="create-account-link"
 				>
 					{{ $t('user.auth.createAccount') }}
 				</RouterLink>
@@ -99,13 +109,14 @@
 
 		<div
 			v-if="!isDesktop && hasOpenIdProviders"
-			class="mbs-4"
+			class="sso-providers mbs-5"
 		>
+			<div class="divider"><span>Ou entre com</span></div>
 			<XButton
 				v-for="(p, k) in openidConnect.providers"
 				:key="k"
 				variant="secondary"
-				class="is-fullwidth mbs-2"
+				class="is-fullwidth sso-btn mbs-3"
 				@click="redirectToProvider(p)"
 			>
 				{{ $t('user.auth.loginWith', {provider: p.name}) }}
@@ -171,17 +182,11 @@ onBeforeMount(() => {
 		errorMessage.value = e.message
 	})
 
-	// Check if the user is already logged in, if so, redirect them to the homepage.
-	// We intentionally use router.push here instead of redirectIfSaved() because
-	// this hook also fires when Login.vue re-mounts inside the authenticated layout
-	// after a successful login. Using redirectIfSaved() here would clear the saved
-	// route before the submit() handler gets a chance to use it.
 	if (authenticated.value) {
 		router.push({name: 'home'})
 		return
 	}
 
-	// Consumed on read so the next visit to the login page can auto-redirect again.
 	const justLoggedOut = sessionStorage.getItem(JUST_LOGGED_OUT_KEY) !== null
 	if (justLoggedOut) {
 		sessionStorage.removeItem(JUST_LOGGED_OUT_KEY)
@@ -213,17 +218,13 @@ const totpPasscode = ref<HTMLInputElement | null>(null)
 
 async function submit() {
 	errorMessage.value = ''
-	// Some browsers prevent Vue bindings from working with autofilled values.
-	// To work around this, we're manually getting the values here instead of relying on vue bindings.
-	// For more info, see https://kolaente.dev/vikunja/frontend/issues/78
-	const credentials = {
+	const credentials: any = {
 		username: usernameRef.value?.value,
 		password: password.value,
 		longToken: rememberMe.value,
 	}
 
 	if (credentials.username === '' || credentials.password === '') {
-		// Trigger the validation error messages
 		validateUsernameField()
 		validatePasswordInitially.value = true
 		return
@@ -238,7 +239,7 @@ async function submit() {
 		authStore.setNeedsTotpPasscode(false)
 
 		redirectIfSaved()
-	} catch (e) {
+	} catch (e: any) {
 		if (e.response?.data.code === 1017 && !credentials.totpPasscode) {
 			return
 		}
@@ -249,26 +250,119 @@ async function submit() {
 </script>
 
 <style lang="scss" scoped>
-.button {
-	margin: 0 0.4rem 0 0;
+.login-page {
+	width: 100%;
 }
 
-.reset-password-link {
-	display: inline-block;
+.login-form-content {
+	width: 100%;
 }
 
-// Underline links sitting inside body text so they're not distinguished by color alone
-.inline-link {
-	text-decoration: underline;
+.field-wrapper {
+	:deep(.label) {
+		font-weight: 600;
+		color: var(--grey-800);
+		margin-bottom: 0.5rem;
+		font-size: 0.95rem;
+	}
+	
+	:deep(input) {
+		padding: 0.75rem 1rem;
+		border-radius: 8px;
+		border: 1px solid var(--grey-300);
+		transition: all 0.2s ease;
+		
+		&:focus {
+			border-color: var(--primary);
+			box-shadow: 0 0 0 3px rgba(25, 115, 255, 0.1);
+		}
+	}
 }
 
 .label-with-link {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	margin-block-end: .5rem;
 
 	.label {
 		margin-block-end: 0;
 	}
+	
+	.reset-password-link {
+		color: var(--primary);
+		font-size: 0.9rem;
+		font-weight: 500;
+		text-decoration: none;
+		
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.checkbox-wrapper {
+	:deep(.checkbox) {
+		font-size: 0.95rem;
+		color: var(--grey-700);
+	}
+}
+
+.login-action-btn {
+	padding: 1.25rem;
+	font-size: 1.05rem;
+	font-weight: 600;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(25, 115, 255, 0.2);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5rem;
+	
+	.icon-right {
+		font-size: 0.9rem;
+	}
+}
+
+.create-account-wrapper {
+	text-align: center;
+	color: var(--grey-600);
+	font-size: 0.95rem;
+	
+	.create-account-link {
+		color: var(--primary);
+		font-weight: 600;
+		margin-left: 0.25rem;
+		text-decoration: none;
+		
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.divider {
+	display: flex;
+	align-items: center;
+	text-align: center;
+	color: var(--grey-400);
+	font-size: 0.9rem;
+	margin: 2rem 0;
+	
+	&::before, &::after {
+		content: '';
+		flex: 1;
+		border-bottom: 1px solid var(--grey-200);
+	}
+	
+	span {
+		padding: 0 1rem;
+	}
+}
+
+.sso-btn {
+	border-radius: 8px;
+	padding: 1rem;
+	font-weight: 500;
 }
 </style>

@@ -1,44 +1,80 @@
 <template>
 	<div class="no-auth-wrapper">
-		<Logo
-			class="logo"
-			width="200"
-			height="58"
-		/>
 		<div class="noauth-container">
 			<section
-				class="image"
+				class="image-panel"
 				:class="{ 'has-message': motd !== '' }"
 			>
-				<Message v-if="motd !== ''">
+				<div class="image-panel-content">
+					<Logo
+						class="logo"
+						width="180"
+						height="50"
+						:dark="true"
+					/>
+					
+					<div class="hero-text">
+						<h1 class="image-title">
+							Organização<br>
+							que impulsiona<br>
+							<span class="highlight">resultados.</span>
+						</h1>
+						<p class="image-subtitle">
+							Gestão de projetos e demandas em um<br>
+							só lugar, para equipes mais focadas e<br>
+							empresas mais produtivas.
+						</p>
+					</div>
+					
+					<div class="feature-chips">
+						<div class="chip">
+							<div class="chip-icon"><i class="fas fa-check-square"></i></div>
+							<span>Mais<br>organização</span>
+						</div>
+						<div class="chip">
+							<div class="chip-icon"><i class="fas fa-chart-bar"></i></div>
+							<span>Mais<br>produtividade</span>
+						</div>
+						<div class="chip">
+							<div class="chip-icon"><i class="fas fa-users"></i></div>
+							<span>Mais<br>resultados</span>
+						</div>
+					</div>
+				</div>
+				<Message v-if="motd !== ''" class="motd-message">
 					{{ motd }}
 				</Message>
-				<h2 class="image-title">
-					{{ $t("misc.welcomeBack") }}
-				</h2>
 			</section>
+			
 			<main
 				id="main-content"
 				tabindex="-1"
-				class="content"
+				class="content-panel"
 			>
-				<div>
-					<h2
-						v-if="title"
-						class="title"
-					>
-						{{ title }}
-					</h2>
+				<div class="content-wrapper">
+					<div class="lang-selector-top">
+						<!-- Optional language selector can go here if needed -->
+					</div>
+					
+					<h2 class="welcome-text">Bem-vindo ao</h2>
+					<h1 class="brand-text">Data Flow</h1>
+					<p class="welcome-subtext">
+						Entre na sua conta para continuar gerenciando<br>
+						suas demandas e projetos.
+					</p>
+
 					<ApiConfig v-if="shouldShowApiConfig" />
+					
 					<Message
 						v-if="motd !== ''"
 						class="is-hidden-tablet mbe-4"
 					>
 						{{ motd }}
 					</Message>
+					
 					<slot />
 				</div>
-				<Legal />
+				<Legal class="legal-footer" />
 			</main>
 		</div>
 	</div>
@@ -84,98 +120,183 @@ useTitle(() => title.value)
 
 <style lang="scss" scoped>
 .no-auth-wrapper {
-	background: var(--site-background) url("@/assets/llama.svg?url") no-repeat
-		fixed bottom left;
+	background: #f4f7fe;
 	min-block-size: 100vh;
 	display: flex;
-	flex-direction: column;
 	place-items: center;
+	justify-content: center;
+	padding: 2rem;
 
-	@media screen and (max-width: $fullhd) {
-		padding-block-end: 15rem;
+	@media screen and (max-width: $tablet) {
+		padding: 1rem;
 	}
 }
 
 .noauth-container {
-	max-inline-size: $desktop;
+	max-inline-size: 1200px;
 	inline-size: 100%;
-	min-block-size: 60vh;
+	min-block-size: 650px;
 	display: flex;
 	background-color: var(--white);
-	box-shadow: var(--shadow-md);
+	border-radius: 24px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+	overflow: hidden;
+	
+	@media screen and (max-width: $tablet) {
+		flex-direction: column;
+		border-radius: 16px;
+	}
+}
+
+.image-panel {
+	inline-size: 50%;
+	padding: 3rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+	position: relative;
 	overflow: hidden;
 
-	@media screen and (min-width: $desktop) {
-		border-radius: $radius;
-	}
-}
-
-.image {
-	inline-size: 50%;
-	padding: 1rem;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-
 	@media screen and (max-width: $tablet) {
-		display: none;
+		display: none; // hide on mobile to save space
 	}
 
-	@media screen and (min-width: $tablet) {
-		background: url("@/assets/no-auth-image.jpg") no-repeat bottom/cover;
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0; right: 0; bottom: 0; left: 0;
+		background: url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop") center/cover no-repeat;
+		opacity: 0.25;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+	}
+
+	.image-panel-content {
 		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
 
-		&.has-message {
-			justify-content: space-between;
+	.logo {
+		margin-bottom: auto;
+		filter: brightness(0) invert(1);
+	}
+
+	.hero-text {
+		margin-top: 4rem;
+		margin-bottom: 3rem;
+
+		.image-title {
+			color: #ffffff;
+			font-size: 3.5rem;
+			font-weight: 800;
+			line-height: 1.1;
+			margin-bottom: 1.5rem;
+			letter-spacing: -0.02em;
+
+			.highlight {
+				color: #00f2fe;
+			}
 		}
 
-		// Darken mainly the lower part of the photo where the white heading sits so
-		// the text keeps a reliable contrast ratio across the whole image.
-		&::before {
-			content: "";
-			position: absolute;
-			inset-block-start: 0;
-			inset-inline-start: 0;
-			inset-inline-end: 0;
-			inset-block-end: 0;
-			background-image: linear-gradient(
-				to top,
-				rgba(0, 0, 0, 0.7) 0%,
-				rgba(0, 0, 0, 0.4) 35%,
-				rgba(0, 0, 0, 0.15) 100%
-			);
+		.image-subtitle {
+			color: rgba(255, 255, 255, 0.85);
+			font-size: 1.15rem;
+			line-height: 1.5;
+			max-width: 90%;
 		}
+	}
 
-		> * {
-			position: relative;
+	.feature-chips {
+		display: flex;
+		gap: 1rem;
+		margin-top: auto;
+
+		.chip {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			background: rgba(255, 255, 255, 0.1);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			border-radius: 12px;
+			padding: 0.75rem 1rem;
+			color: white;
+			font-size: 0.85rem;
+			font-weight: 500;
+			line-height: 1.2;
+			backdrop-filter: blur(10px);
+
+			.chip-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 32px;
+				height: 32px;
+				border-radius: 8px;
+				background: rgba(255, 255, 255, 0.2);
+				font-size: 1rem;
+			}
 		}
 	}
 }
 
-.content {
+.content-panel {
+	inline-size: 50%;
 	display: flex;
-	justify-content: space-between;
 	flex-direction: column;
-	padding: 2rem 2rem 1.5rem;
+	padding: 4rem;
+	background: #ffffff;
+	position: relative;
 
 	@media screen and (max-width: $desktop) {
+		padding: 3rem 2rem;
+	}
+
+	@media screen and (max-width: $tablet) {
 		inline-size: 100%;
-		max-inline-size: 450px;
-		margin-inline: auto;
+		padding: 2rem 1.5rem;
 	}
 
-	@media screen and (min-width: $desktop) {
-		inline-size: 50%;
+	.content-wrapper {
+		margin: auto 0;
+		max-width: 420px;
+		width: 100%;
+	}
+
+	.welcome-text {
+		font-size: 1.2rem;
+		color: var(--grey-600);
+		font-weight: 500;
+		margin-bottom: 0.25rem;
+	}
+
+	.brand-text {
+		font-size: 3rem;
+		font-weight: 800;
+		color: var(--primary);
+		margin-bottom: 1rem;
+		letter-spacing: -0.02em;
+	}
+
+	.welcome-subtext {
+		color: var(--grey-500);
+		font-size: 1rem;
+		line-height: 1.5;
+		margin-bottom: 2.5rem;
 	}
 }
 
-.logo {
-	max-inline-size: 100%;
-	margin: 1rem 0;
+.legal-footer {
+	margin-top: 2rem;
+	text-align: center;
+	opacity: 0.7;
 }
 
-.image-title {
-	color: hsl(0deg, 0%, 100%);
-	font-size: 2.5rem;
+// Reset the global logo from the body, as we put it inside the left pane
+:deep(.logo) {
+	margin: 0 !important;
 }
 </style>

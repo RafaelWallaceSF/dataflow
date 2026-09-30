@@ -77,6 +77,9 @@ export default class ProjectFileService extends AbstractService<IProjectFile> {
 
 		try {
 			const response = await this.http.post(finalUrl, data, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
 				transformRequest: formData => formData,
 				onUploadProgress: ({progress}) => {
 					this.uploadProgress = progress ? Math.round(progress * 100) : 0
