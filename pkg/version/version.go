@@ -22,7 +22,7 @@ import "code.vikunja.io/api/pkg/swagger"
 // It is an own package to avoid import cycles
 
 // Version sets the version to be printed to the user. Gets overwritten by "make release" or "make build" with last git commit or tag.
-var Version = "dev"
+var Version = "dataflow-0.1.0"
 
 func init() {
 	// Additional swagger information

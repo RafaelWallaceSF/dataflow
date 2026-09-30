@@ -12,7 +12,7 @@ COPY frontend/pnpm-lock.yaml frontend/package.json frontend/pnpm-workspace.yaml 
 RUN npm install -g corepack && corepack enable && \
     pnpm install --frozen-lockfile
 COPY frontend/ ./
-ARG RELEASE_VERSION=dev
+ARG RELEASE_VERSION=dataflow-0.1.0
 RUN echo "{\"VERSION\": \"${RELEASE_VERSION/-g/-}\"}" > src/version.json && pnpm run build
 
 FROM --platform=$BUILDPLATFORM ghcr.io/techknowlogick/xgo:go-1.27.x@sha256:d3a03602524b428aa684ca43196fe76a2d4dc526c70905b7a4e24d9f48daae8b AS apibuilder
@@ -26,7 +26,7 @@ WORKDIR /go/src/code.vikunja.io/api
 COPY . ./
 COPY --from=frontendbuilder /build/dist ./frontend/dist
 
-ARG TARGETOS TARGETARCH TARGETVARIANT RELEASE_VERSION
+ARG TARGETOS=linux TARGETARCH=amd64 TARGETVARIANT="" RELEASE_VERSION=dataflow-0.1.0
 ENV RELEASE_VERSION=$RELEASE_VERSION
 
 RUN export PATH=$PATH:$GOPATH/bin && \

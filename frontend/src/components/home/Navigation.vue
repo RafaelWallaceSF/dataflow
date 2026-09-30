@@ -64,9 +64,9 @@
 				</li>
 				<li>
 					<RouterLink
-						:to="{ name: 'tasks.index'}"
+						:to="{ name: 'tasks.range'}"
 						class="nav-item-link"
-						:class="{'is-current': isRouteActive('tasks.index')}"
+						:class="{'is-current': isRouteActive('tasks.range')}"
 					>
 						<span class="menu-item-icon icon">
 							<Icon icon="tasks" />

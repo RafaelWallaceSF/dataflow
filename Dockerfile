@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+ARG BUILDPLATFORM=linux/amd64
 FROM --platform=$BUILDPLATFORM node:24.20.0-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf AS frontendbuilder
 
 WORKDIR /build
@@ -11,10 +12,12 @@ COPY frontend/pnpm-lock.yaml frontend/package.json frontend/pnpm-workspace.yaml 
 RUN npm install -g corepack && corepack enable && \
     pnpm install --frozen-lockfile
 COPY frontend/ ./
-ARG RELEASE_VERSION=dev
+ARG RELEASE_VERSION=dataflow-0.1.0
 RUN echo "{\"VERSION\": \"${RELEASE_VERSION/-g/-}\"}" > src/version.json && pnpm run build
 
 FROM --platform=$BUILDPLATFORM ghcr.io/techknowlogick/xgo:go-1.27.x@sha256:d3a03602524b428aa684ca43196fe76a2d4dc526c70905b7a4e24d9f48daae8b AS apibuilder
+
+ENTRYPOINT []
 
 RUN go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
@@ -23,7 +26,7 @@ WORKDIR /go/src/code.vikunja.io/api
 COPY . ./
 COPY --from=frontendbuilder /build/dist ./frontend/dist
 
-ARG TARGETOS TARGETARCH TARGETVARIANT RELEASE_VERSION
+ARG TARGETOS=linux TARGETARCH=amd64 TARGETVARIANT="" RELEASE_VERSION=dataflow-0.1.0
 ENV RELEASE_VERSION=$RELEASE_VERSION
 
 RUN export PATH=$PATH:$GOPATH/bin && \
@@ -50,7 +53,7 @@ WORKDIR /app/vikunja
 ENTRYPOINT [ "/app/vikunja/vikunja" ]
 EXPOSE 3456
 
-COPY --from=apibuilder --chown=1000:1000 --chmod=1777 /tmp /tmp
+COPY --from=apibuilder --chown=1000:1000 /tmp /tmp
 
 USER 1000
 
