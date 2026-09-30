@@ -8,8 +8,8 @@
 				<div class="image-panel-content">
 					<Logo
 						class="logo"
-						width="180"
-						height="50"
+						width="140"
+						height="38"
 						:dark="true"
 					/>
 					
@@ -20,24 +20,22 @@
 							<span class="highlight">resultados.</span>
 						</h1>
 						<p class="image-subtitle">
-							Gestão de projetos e demandas em um<br>
-							só lugar, para equipes mais focadas e<br>
-							empresas mais produtivas.
+							Gestão de projetos e demandas em um só lugar, para equipes mais focadas e empresas mais produtivas.
 						</p>
 					</div>
 					
 					<div class="feature-chips">
 						<div class="chip">
 							<div class="chip-icon"><i class="fas fa-check-square"></i></div>
-							<span>Mais<br>organização</span>
+							<span>Mais organização</span>
 						</div>
 						<div class="chip">
 							<div class="chip-icon"><i class="fas fa-chart-bar"></i></div>
-							<span>Mais<br>produtividade</span>
+							<span>Mais produtividade</span>
 						</div>
 						<div class="chip">
 							<div class="chip-icon"><i class="fas fa-users"></i></div>
-							<span>Mais<br>resultados</span>
+							<span>Mais resultados</span>
 						</div>
 					</div>
 				</div>
@@ -52,29 +50,27 @@
 				class="content-panel"
 			>
 				<div class="content-wrapper">
-					<div class="lang-selector-top">
-						<!-- Optional language selector can go here if needed -->
+					<div class="brand-header">
+						<h2 class="welcome-text">Bem-vindo ao</h2>
+						<h1 class="brand-text">Data Flow</h1>
+						<p class="welcome-subtext">
+							Entre na sua conta para continuar gerenciando suas demandas e projetos.
+						</p>
 					</div>
-					
-					<h2 class="welcome-text">Bem-vindo ao</h2>
-					<h1 class="brand-text">Data Flow</h1>
-					<p class="welcome-subtext">
-						Entre na sua conta para continuar gerenciando<br>
-						suas demandas e projetos.
-					</p>
 
 					<ApiConfig v-if="shouldShowApiConfig" />
 					
 					<Message
 						v-if="motd !== ''"
-						class="is-hidden-tablet mbe-4"
+						class="is-hidden-tablet mbe-3"
 					>
 						{{ motd }}
 					</Message>
 					
 					<slot />
+
+					<Legal class="legal-footer" />
 				</div>
-				<Legal class="legal-footer" />
 			</main>
 		</div>
 	</div>
@@ -120,46 +116,46 @@ useTitle(() => title.value)
 
 <style lang="scss" scoped>
 .no-auth-wrapper {
-	background: #f4f7fe;
+	background: #f0f4f9;
 	min-block-size: 100vh;
 	display: flex;
 	place-items: center;
 	justify-content: center;
-	padding: 2rem;
+	padding: 1rem;
+	box-sizing: border-box;
 
 	@media screen and (max-width: $tablet) {
-		padding: 1rem;
+		padding: 0.5rem;
 	}
 }
 
 .noauth-container {
-	max-inline-size: 1200px;
+	max-inline-size: 880px;
 	inline-size: 100%;
-	min-block-size: 650px;
 	display: flex;
-	background-color: var(--white);
-	border-radius: 24px;
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+	background-color: #ffffff;
+	border-radius: 16px;
+	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
 	overflow: hidden;
 	
 	@media screen and (max-width: $tablet) {
 		flex-direction: column;
-		border-radius: 16px;
+		border-radius: 12px;
 	}
 }
 
 .image-panel {
 	inline-size: 50%;
-	padding: 3rem;
+	padding: 1.75rem 2rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+	background: linear-gradient(135deg, #0b1528 0%, #1e3a8a 100%);
 	position: relative;
 	overflow: hidden;
 
 	@media screen and (max-width: $tablet) {
-		display: none; // hide on mobile to save space
+		display: none;
 	}
 
 	&::before {
@@ -167,7 +163,7 @@ useTitle(() => title.value)
 		position: absolute;
 		top: 0; right: 0; bottom: 0; left: 0;
 		background: url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop") center/cover no-repeat;
-		opacity: 0.25;
+		opacity: 0.22;
 		mix-blend-mode: overlay;
 		pointer-events: none;
 	}
@@ -178,23 +174,24 @@ useTitle(() => title.value)
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		justify-content: space-between;
 	}
 
 	.logo {
-		margin-bottom: auto;
+		margin-bottom: 1rem;
 		filter: brightness(0) invert(1);
 	}
 
 	.hero-text {
-		margin-top: 4rem;
-		margin-bottom: 3rem;
+		margin: auto 0;
+		padding: 0.75rem 0;
 
 		.image-title {
 			color: #ffffff;
-			font-size: 3.5rem;
+			font-size: 2.1rem;
 			font-weight: 800;
-			line-height: 1.1;
-			margin-bottom: 1.5rem;
+			line-height: 1.15;
+			margin-bottom: 0.75rem;
 			letter-spacing: -0.02em;
 
 			.highlight {
@@ -204,40 +201,41 @@ useTitle(() => title.value)
 
 		.image-subtitle {
 			color: rgba(255, 255, 255, 0.85);
-			font-size: 1.15rem;
-			line-height: 1.5;
-			max-width: 90%;
+			font-size: 0.875rem;
+			line-height: 1.45;
+			max-width: 95%;
 		}
 	}
 
 	.feature-chips {
 		display: flex;
-		gap: 1rem;
-		margin-top: auto;
+		flex-direction: column;
+		gap: 0.45rem;
+		margin-top: 1rem;
 
 		.chip {
 			display: flex;
 			align-items: center;
-			gap: 0.75rem;
-			background: rgba(255, 255, 255, 0.1);
-			border: 1px solid rgba(255, 255, 255, 0.2);
-			border-radius: 12px;
-			padding: 0.75rem 1rem;
+			gap: 0.5rem;
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 8px;
+			padding: 0.35rem 0.65rem;
 			color: white;
-			font-size: 0.85rem;
+			font-size: 0.78rem;
 			font-weight: 500;
-			line-height: 1.2;
-			backdrop-filter: blur(10px);
+			backdrop-filter: blur(8px);
 
 			.chip-icon {
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				width: 32px;
-				height: 32px;
-				border-radius: 8px;
+				width: 22px;
+				height: 22px;
+				border-radius: 5px;
 				background: rgba(255, 255, 255, 0.2);
-				font-size: 1rem;
+				font-size: 0.75rem;
+				flex-shrink: 0;
 			}
 		}
 	}
@@ -247,55 +245,63 @@ useTitle(() => title.value)
 	inline-size: 50%;
 	display: flex;
 	flex-direction: column;
-	padding: 4rem;
+	padding: 1.75rem 2rem;
 	background: #ffffff;
 	position: relative;
+	overflow-y: auto;
 
 	@media screen and (max-width: $desktop) {
-		padding: 3rem 2rem;
+		padding: 1.5rem 1.5rem;
 	}
 
 	@media screen and (max-width: $tablet) {
 		inline-size: 100%;
-		padding: 2rem 1.5rem;
+		padding: 1.5rem 1.25rem;
 	}
 
 	.content-wrapper {
-		margin: auto 0;
-		max-width: 420px;
+		margin: auto;
+		max-width: 340px;
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.brand-header {
+		margin-bottom: 0.85rem;
 	}
 
 	.welcome-text {
-		font-size: 1.2rem;
+		font-size: 0.875rem;
 		color: var(--grey-600);
 		font-weight: 500;
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.1rem;
 	}
 
 	.brand-text {
-		font-size: 3rem;
+		font-size: 1.85rem;
 		font-weight: 800;
 		color: var(--primary);
-		margin-bottom: 1rem;
+		margin-bottom: 0.25rem;
 		letter-spacing: -0.02em;
+		line-height: 1.1;
 	}
 
 	.welcome-subtext {
 		color: var(--grey-500);
-		font-size: 1rem;
-		line-height: 1.5;
-		margin-bottom: 2.5rem;
+		font-size: 0.825rem;
+		line-height: 1.4;
+		margin-bottom: 0;
 	}
 }
 
 .legal-footer {
-	margin-top: 2rem;
+	margin-top: 0.85rem;
 	text-align: center;
-	opacity: 0.7;
+	opacity: 0.65;
+	font-size: 0.75rem;
 }
 
-// Reset the global logo from the body, as we put it inside the left pane
 :deep(.logo) {
 	margin: 0 !important;
 }

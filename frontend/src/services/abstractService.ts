@@ -78,7 +78,7 @@ export default abstract class AbstractService<Model extends IAbstract = IAbstrac
 				case 'post':
 					if (this.useUpdateInterceptor()) {
 						config.data = this.beforeUpdate(config.data)
-						if(this.autoTransformBeforePost()) {
+						if(this.autoTransformBeforePost() && !(typeof FormData !== 'undefined' && config.data instanceof FormData)) {
 							config.data = objectToSnakeCase(config.data)
 						}
 					}

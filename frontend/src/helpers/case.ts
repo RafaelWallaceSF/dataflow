@@ -43,6 +43,9 @@ export function objectToCamelCase(object: Record<string, any>) {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function objectToSnakeCase(object: Record<string, any>) {
+	if (typeof FormData !== 'undefined' && object instanceof FormData) {
+		return object
+	}
 
 	// When calling recursively, this can be called without being and object or array in which case we just return the value
 	if (typeof object !== 'object' || object === null) {

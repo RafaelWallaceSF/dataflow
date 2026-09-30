@@ -96,9 +96,14 @@ export function AuthenticatedHTTPFactory() {
 	const instance = HTTPFactory()
 
 	instance.interceptors.request.use((config) => {
-		config.headers = {
-			...config.headers,
-			'Content-Type': 'application/json',
+		// Only set application/json if data is not FormData, allowing multipart uploads to set boundary correctly
+		if (!(config.data instanceof FormData)) {
+			config.headers = {
+				...config.headers,
+				'Content-Type': 'application/json',
+			}
+		} else if (config.headers) {
+			delete config.headers['Content-Type']
 		}
 
 		// Set the default auth header if we have a token

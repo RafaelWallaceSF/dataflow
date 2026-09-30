@@ -22,7 +22,7 @@
 		"accountWillBeDeleted": "A tua conta será eliminada, incluindo todos os projetos, tarefas e anexos que poderás ter criado."
 	},
 	"ready": {
-		"loading": "Vikunja está a carregar…",
+		"loading": "Carregando Data Flow…",
 		"errorOccured": "Ocorreu um erro:",
 		"checkApiUrl": "Por favor, verifica se o url da api está correto.",
 		"noApiUrlConfigured": "Nenhum URL de API foi configurado. Por favor, define um abaixo:"

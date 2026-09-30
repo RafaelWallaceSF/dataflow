@@ -216,7 +216,7 @@ async function uploadFiles(fileList: FileList | File[]) {
 		const uploaded = await projectFileService.upload(new ProjectFileModel({projectId: Number(props.projectId)}), fileList)
 		const newFiles = (uploaded.success ?? []) as IProjectFile[]
 		if (newFiles.length > 0) {
-			files.value = [...files.value, ...newFiles]
+			await loadProjectFiles()
 			notifySuccess('Documento(s) enviado(s) com sucesso!')
 		}
 		if (uploaded.errors?.length) {

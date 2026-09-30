@@ -4,14 +4,14 @@
 			v-if="confirmedEmailSuccess"
 			variant="success"
 			text-align="center"
-			class="mbe-4"
+			class="mbe-2"
 		>
 			{{ $t('user.auth.confirmEmailSuccess') }}
 		</Message>
 		<Message
 			v-if="errorMessage"
 			variant="danger"
-			class="mbe-4"
+			class="mbe-2"
 		>
 			{{ errorMessage }}
 		</Message>
@@ -24,7 +24,7 @@
 			@submit.prevent="submit"
 			class="login-form-content"
 		>
-			<div class="field-wrapper mbe-4">
+			<div class="field-wrapper mbe-2">
 				<label class="label">{{ $t('user.auth.usernameEmail') }}</label>
 				<FormField
 					id="username"
@@ -41,7 +41,7 @@
 				/>
 			</div>
 			
-			<div class="field-wrapper mbe-5">
+			<div class="field-wrapper mbe-2">
 				<div class="label-with-link">
 					<label
 						class="label"
@@ -77,7 +77,7 @@
 				@keyup.enter="submit"
 			/>
 			
-			<div class="checkbox-wrapper mbe-5">
+			<div class="checkbox-wrapper mbe-3">
 				<FormCheckbox
 					v-model="rememberMe"
 					:label="$t('user.auth.remember')"
@@ -95,7 +95,7 @@
 			
 			<p
 				v-if="registrationEnabled"
-				class="create-account-wrapper mbs-5"
+				class="create-account-wrapper mbs-2"
 			>
 				{{ $t('user.auth.noAccountYet') }}
 				<RouterLink
@@ -109,14 +109,14 @@
 
 		<div
 			v-if="!isDesktop && hasOpenIdProviders"
-			class="sso-providers mbs-5"
+			class="sso-providers mbs-2"
 		>
 			<div class="divider"><span>Ou entre com</span></div>
 			<XButton
 				v-for="(p, k) in openidConnect.providers"
 				:key="k"
 				variant="secondary"
-				class="is-fullwidth sso-btn mbs-3"
+				class="is-fullwidth sso-btn mbs-2"
 				@click="redirectToProvider(p)"
 			>
 				{{ $t('user.auth.loginWith', {provider: p.name}) }}
@@ -212,7 +212,6 @@ const validateUsernameField = useDebounceFn(() => {
 	usernameValid.value = usernameRef.value?.value !== ''
 }, 100)
 
-
 const needsTotpPasscode = computed(() => authStore.needsTotpPasscode)
 const totpPasscode = ref<HTMLInputElement | null>(null)
 
@@ -262,19 +261,20 @@ async function submit() {
 	:deep(.label) {
 		font-weight: 600;
 		color: var(--grey-800);
-		margin-bottom: 0.5rem;
-		font-size: 0.95rem;
+		margin-bottom: 0.25rem;
+		font-size: 0.825rem;
 	}
 	
 	:deep(input) {
-		padding: 0.75rem 1rem;
-		border-radius: 8px;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+		border-radius: 6px;
 		border: 1px solid var(--grey-300);
 		transition: all 0.2s ease;
 		
 		&:focus {
 			border-color: var(--primary);
-			box-shadow: 0 0 0 3px rgba(25, 115, 255, 0.1);
+			box-shadow: 0 0 0 2px rgba(25, 115, 255, 0.12);
 		}
 	}
 }
@@ -283,7 +283,7 @@ async function submit() {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-block-end: .5rem;
+	margin-block-end: 0.25rem;
 
 	.label {
 		margin-block-end: 0;
@@ -291,7 +291,7 @@ async function submit() {
 	
 	.reset-password-link {
 		color: var(--primary);
-		font-size: 0.9rem;
+		font-size: 0.8rem;
 		font-weight: 500;
 		text-decoration: none;
 		
@@ -303,31 +303,31 @@ async function submit() {
 
 .checkbox-wrapper {
 	:deep(.checkbox) {
-		font-size: 0.95rem;
+		font-size: 0.825rem;
 		color: var(--grey-700);
 	}
 }
 
 .login-action-btn {
-	padding: 1.25rem;
-	font-size: 1.05rem;
+	padding: 0.65rem 1rem;
+	font-size: 0.95rem;
 	font-weight: 600;
-	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(25, 115, 255, 0.2);
+	border-radius: 6px;
+	box-shadow: 0 3px 10px rgba(25, 115, 255, 0.2);
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.4rem;
 	
 	.icon-right {
-		font-size: 0.9rem;
+		font-size: 0.8rem;
 	}
 }
 
 .create-account-wrapper {
 	text-align: center;
 	color: var(--grey-600);
-	font-size: 0.95rem;
+	font-size: 0.825rem;
 	
 	.create-account-link {
 		color: var(--primary);
@@ -346,8 +346,8 @@ async function submit() {
 	align-items: center;
 	text-align: center;
 	color: var(--grey-400);
-	font-size: 0.9rem;
-	margin: 2rem 0;
+	font-size: 0.8rem;
+	margin: 0.85rem 0;
 	
 	&::before, &::after {
 		content: '';
@@ -356,13 +356,14 @@ async function submit() {
 	}
 	
 	span {
-		padding: 0 1rem;
+		padding: 0 0.5rem;
 	}
 }
 
 .sso-btn {
-	border-radius: 8px;
-	padding: 1rem;
+	border-radius: 6px;
+	padding: 0.6rem;
+	font-size: 0.85rem;
 	font-weight: 500;
 }
 </style>

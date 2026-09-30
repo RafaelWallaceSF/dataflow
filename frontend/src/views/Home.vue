@@ -965,14 +965,16 @@ $danger: #F04438;
 $purple: #7F56D9;
 
 .dataflow-overview-wrapper {
-	min-height: 100vh;
-	background: $bg-app;
+	width: 100%;
+	max-width: 1500px;
+	margin: 0 auto;
+	padding: 0 0 2rem 0;
+	box-sizing: border-box;
 	color: $text-main;
-	padding: 2rem 2.5rem 4rem 2.5rem;
 	font-family: inherit;
 
 	@media (max-width: 768px) {
-		padding: 1.25rem 1rem;
+		padding: 0 0 1.5rem 0;
 	}
 }
 
@@ -1063,15 +1065,15 @@ $purple: #7F56D9;
 /* 4 METRICS CARDS */
 .metrics-grid {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 1.25rem;
-	margin-bottom: 2rem;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1rem;
+	margin-bottom: 1.5rem;
 
-	@media (max-width: 1024px) {
-		grid-template-columns: repeat(2, 1fr);
+	@media (max-width: 1100px) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 600px) {
 		grid-template-columns: 1fr;
 	}
 
@@ -1165,9 +1167,9 @@ $purple: #7F56D9;
 /* MAIN DASHBOARD GRID (65% / 35%) */
 .main-dashboard-grid {
 	display: grid;
-	grid-template-columns: 65% 35%;
-	gap: 1.5rem;
-	margin-bottom: 2.5rem;
+	grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+	gap: 1.25rem;
+	margin-bottom: 2rem;
 
 	@media (max-width: 1024px) {
 		grid-template-columns: 1fr;

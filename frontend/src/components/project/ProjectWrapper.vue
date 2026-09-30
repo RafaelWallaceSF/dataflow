@@ -13,11 +13,11 @@
 		<div
 			ref="switchViewContainerRef"
 			class="switch-view-container d-print-none"
-			:class="{'is-justify-content-flex-end': views.length === 1}"
+			:class="{'is-justify-content-flex-end': (!views || views.length <= 1) && !hasDocumentsTab}"
 		>
 			<!-- Dropdown mode when buttons overflow -->
 			<Dropdown
-				v-if="isOverflowing && views.length > 1"
+				v-if="isOverflowing && views && views.length > 0"
 				class="switch-view-dropdown"
 			>
 				<template #trigger="{ toggleOpen, open }">
@@ -47,7 +47,7 @@
 							:to="getDocumentsRoute()"
 							:class="{'is-active': route.query.documents === '1'}"
 						>
-							{{ t('project.documents.shortTitle') }}
+							{{ t('project.documents.shortTitle') || 'Documentos' }}
 						</DropdownItem>
 					</div>
 				</template>
@@ -55,7 +55,7 @@
 
 			<!-- Inline buttons, hidden when overflowing but kept in DOM for width measurement -->
 			<div
-				v-if="views.length > 1"
+				v-if="views && views.length > 0"
 				ref="switchViewRef"
 				class="switch-view"
 				:class="{'switch-view--hidden': isOverflowing || !overflowChecked}"
@@ -77,7 +77,7 @@
 					:to="getDocumentsRoute()"
 					:tabindex="isOverflowing ? -1 : undefined"
 				>
-					{{ t('project.documents.shortTitle') }}
+					{{ t('project.documents.shortTitle') || 'Documentos' }}
 				</BaseButton>
 			</div>
 			<slot name="header" />
@@ -136,6 +136,7 @@ const switchViewContainerRef = ref<HTMLElement>()
 const switchViewRef = ref<HTMLElement>()
 const isOverflowing = ref(false)
 const overflowChecked = ref(false)
+const hasDocumentsTab = true
 
 function checkOverflow() {
 	if (!switchViewRef.value || !switchViewContainerRef.value) {
@@ -168,6 +169,9 @@ useTitle(() => currentProject.value?.id ? getProjectTitle(currentProject.value) 
 const views = computed(() => projectStore.projects[props.projectId]?.views)
 
 const activeViewTitle = computed(() => {
+	if (route.query.documents === '1') {
+		return t('project.documents.shortTitle') || 'Documentos'
+	}
 	const activeView = views.value?.find((v: IProjectView) => v.id === props.viewId)
 	return activeView ? getViewTitle(activeView) : ''
 })

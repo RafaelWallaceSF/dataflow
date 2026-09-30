@@ -49,7 +49,7 @@
     "accountWillBeDeleted": "Sua conta será excluída, incluindo todos os projetos, tarefas e anexos que você possa criar."
   },
   "ready": {
-    "loading": "Data Flow está cliquendo…",
+    "loading": "Carregando Data Flow…",
     "errorOccured": "Ocorreu um erro:",
     "checkApiUrl": "Por favor, verifique se a URL da API está correta.",
     "noApiUrlConfigured": "Nenhuma URL de API foi configurada. Por favor, defina uma abaixo:"

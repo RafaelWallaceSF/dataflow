@@ -17,6 +17,8 @@ RUN echo "{\"VERSION\": \"${RELEASE_VERSION/-g/-}\"}" > src/version.json && pnpm
 
 FROM --platform=$BUILDPLATFORM ghcr.io/techknowlogick/xgo:go-1.27.x@sha256:d3a03602524b428aa684ca43196fe76a2d4dc526c70905b7a4e24d9f48daae8b AS apibuilder
 
+ENTRYPOINT []
+
 RUN go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
 
@@ -24,10 +26,7 @@ WORKDIR /go/src/code.vikunja.io/api
 COPY . ./
 COPY --from=frontendbuilder /build/dist ./frontend/dist
 
-ARG TARGETOS=linux
-ARG TARGETARCH=amd64
-ARG TARGETVARIANT=""
-ARG RELEASE_VERSION=luah-custom-20260929
+ARG TARGETOS TARGETARCH TARGETVARIANT RELEASE_VERSION
 ENV RELEASE_VERSION=$RELEASE_VERSION
 
 RUN export PATH=$PATH:$GOPATH/bin && \

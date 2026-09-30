@@ -45,12 +45,12 @@
 	<CustomTransition name="fade">
 		<section
 			v-if="baseStore.loading"
-			class="vikunja-loading"
+			class="dataflow-loading"
 		>
 			<Logo class="logo" />
-			<p>
+			<p class="loading-label">
 				<span class="loader-container is-loading-small is-loading" />
-				{{ $t('ready.loading') }}
+				Carregando Data Flow...
 			</p>
 		</section>
 	</CustomTransition>
@@ -73,9 +73,7 @@ const baseStore = useBaseStore()
 </script>
 
 <style lang="scss" scoped>
-// stylelint-disable no-invalid-position-declaration
-
-.vikunja-loading {
+.dataflow-loading {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -87,22 +85,32 @@ const baseStore = useBaseStore()
 	inset-inline-start: 0;
 	inset-block-end: 0;
 	inset-inline-end: 0;
-	background: var(--grey-100);
-	z-index: 99;
+	background: #F8FAFC;
+	z-index: 9999;
 }
 
 .logo {
-	margin-block-end: 1rem;
-	inline-size: 100px;
-	block-size: 100px;
+	margin-block-end: 1.5rem;
+	inline-size: 110px;
+	block-size: 110px;
+	animation: pulse 2.5s ease-in-out infinite;
+}
+
+.loading-label {
+	display: inline-flex;
+	align-items: center;
+	font-size: 1rem;
+	font-weight: 500;
+	color: #475467;
+	font-family: inherit;
 }
 
 .loader-container {
-	margin-inline-end: 1rem;
+	margin-inline-end: 0.75rem;
 
 	&.is-loading::after {
-		border-inline-start-color: var(--grey-400);
-		border-block-end-color: var(--grey-400);
+		border-inline-start-color: #3157F6;
+		border-block-end-color: #3157F6;
 	}
 }
 
@@ -126,5 +134,14 @@ const baseStore = useBaseStore()
 	color: $white;
 	font-weight: 700 !important;
 	font-size: 1.5rem;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.04);
+	}
 }
 </style>

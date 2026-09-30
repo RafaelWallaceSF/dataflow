@@ -64,8 +64,9 @@
 				</li>
 				<li>
 					<RouterLink
-						:to="{ name: 'tasks.range' }"
+						:to="{ name: 'tasks.index'}"
 						class="nav-item-link"
+						:class="{'is-current': isRouteActive('tasks.index')}"
 					>
 						<span class="menu-item-icon icon">
 							<Icon icon="tasks" />
@@ -99,28 +100,17 @@
 						<span class="nav-label">Equipes</span>
 					</RouterLink>
 				</li>
-				<li v-if="timeTrackingEnabled">
-					<RouterLink
-						:to="{ name: 'time-tracking'}"
-						class="nav-item-link"
-						:class="{'is-current': isRouteActive('time-tracking')}"
-					>
-						<span class="menu-item-icon icon">
-							<Icon :icon="['far', 'clock']" />
-						</span>
-						<span class="nav-label">Apontamento</span>
-					</RouterLink>
-				</li>
 			</menu>
 		</nav>
 
 		<div class="sidebar-divider" />
 
+		<!-- PROJECTS SECTION -->
 		<div class="sidebar-projects-section">
 			<div class="projects-section-title">
 				<span>MEUS PROJETOS</span>
 			</div>
-
+			
 			<Loading
 				v-if="projectStore.isLoading"
 				variant="small"
@@ -163,6 +153,7 @@
 			</template>
 		</div>
 
+		<!-- RESIZE HANDLE -->
 		<div
 			v-if="!isMobile"
 			class="resize-handle"
@@ -183,8 +174,6 @@ import Icon from '@/components/misc/Icon'
 
 import {useBaseStore} from '@/stores/base'
 import {useProjectStore} from '@/stores/projects'
-import {useConfigStore} from '@/stores/config'
-import {PRO_FEATURE} from '@/constants/proFeatures'
 import ProjectsNavigation from '@/components/home/ProjectsNavigation.vue'
 import type {IProject} from '@/modelTypes/IProject'
 import {useSidebarResize} from '@/composables/useSidebarResize'
@@ -192,33 +181,34 @@ import {useSidebarResize} from '@/composables/useSidebarResize'
 const route = useRoute()
 const baseStore = useBaseStore()
 const projectStore = useProjectStore()
-const configStore = useConfigStore()
 
-const timeTrackingEnabled = computed(() => configStore.isProFeatureEnabled(PRO_FEATURE.TIME_TRACKING))
-
-const {sidebarWidth, isResizing, startResize, isMobile} = useSidebarResize()
+const {
+	sidebarWidth,
+	isResizing,
+	startResize,
+	isMobile,
+} = useSidebarResize()
 
 const projects = computed(() => projectStore.notArchivedRootProjects as IProject[])
 const favoriteProjects = computed(() => projectStore.favoriteProjects as IProject[])
 const savedFilterProjects = computed(() => projectStore.savedFilterProjects as IProject[])
 
-function isRouteActive(name: string) {
+function isRouteActive(name: string): boolean {
 	return route.name === name
 }
 </script>
 
 <style lang="scss" scoped>
 .menu-container.dataflow-sidebar {
-	--sidebar-width: #{$navbar-width};
+	--sidebar-width: 250px;
 
 	display: flex;
 	flex-direction: column;
 	background: #0B1633;
 	color: #94A3B8;
-	padding: 1rem 0.75rem;
+	padding: 0.85rem 0.65rem;
 	transition: transform $transition-duration ease-in;
 	position: fixed;
-	/* Start below the top navbar on desktop so no overlap occurs */
 	inset-block-start: $navbar-height;
 	inset-block-end: 0;
 	inset-inline-start: 0;
@@ -233,10 +223,6 @@ function isRouteActive(name: string) {
 		transform: translateX(100%);
 	}
 
-	@media screen and (min-width: $tablet) {
-		transform: translateX(0);
-	}
-
 	@media screen and (max-width: $tablet) {
 		inset-block-start: 0;
 		inline-size: 78vw;
@@ -244,8 +230,12 @@ function isRouteActive(name: string) {
 	}
 
 	&.is-active {
-		transform: translateX(0);
+		transform: translateX(0) !important;
 		transition: transform $transition-duration ease-out;
+
+		[dir="rtl"] & {
+			transform: translateX(0) !important;
+		}
 	}
 
 	&.is-resizing {
@@ -269,45 +259,39 @@ function isRouteActive(name: string) {
 	}
 
 	.brand-logo {
-		max-height: 36px;
-		width: auto;
+		max-inline-size: 140px;
 	}
 }
 
-.top-menu {
-	margin-bottom: 0.5rem;
+.menu.top-menu {
+	margin-bottom: 0.25rem;
 
 	.menu-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-
-		li {
-			font-weight: 500;
-			font-family: $vikunja-font;
-		}
 
 		.nav-item-link {
 			display: flex;
 			align-items: center;
-			gap: 0.75rem;
-			padding: 0.65rem 0.85rem;
-			border-radius: 8px;
+			gap: 0.65rem;
+			padding: 0.55rem 0.75rem;
 			color: #94A3B8;
-			text-decoration: none;
-			font-size: 0.925rem;
+			font-size: 0.875rem;
 			font-weight: 500;
-			transition: all 0.15s ease-in-out;
-			position: relative;
+			border-radius: 8px;
+			text-decoration: none;
+			transition: all 0.15s ease;
 
 			.menu-item-icon {
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 1.05rem;
+				width: 1.25rem;
+				font-size: 0.95rem;
 				color: #64748B;
 				transition: color 0.15s ease;
 			}
@@ -345,7 +329,7 @@ function isRouteActive(name: string) {
 .sidebar-divider {
 	height: 1px;
 	background: rgba(255, 255, 255, 0.08);
-	margin: 0.85rem 0.5rem 1rem 0.5rem;
+	margin: 0.65rem 0.5rem 0.85rem 0.5rem;
 }
 
 .sidebar-projects-section {
@@ -354,8 +338,8 @@ function isRouteActive(name: string) {
 	flex-direction: column;
 
 	.projects-section-title {
-		padding: 0.25rem 0.75rem 0.5rem 0.75rem;
-		font-size: 0.7rem;
+		padding: 0.25rem 0.75rem 0.4rem 0.75rem;
+		font-size: 0.68rem;
 		letter-spacing: 0.08em;
 		font-weight: 700;
 		color: #64748B;
@@ -366,8 +350,8 @@ function isRouteActive(name: string) {
 			a {
 				color: #94A3B8;
 				border-radius: 6px;
-				font-size: 0.875rem;
-				padding: 0.45rem 0.75rem;
+				font-size: 0.85rem;
+				padding: 0.4rem 0.65rem;
 
 				&:hover {
 					background: rgba(255, 255, 255, 0.05);

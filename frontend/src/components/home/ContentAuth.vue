@@ -116,7 +116,6 @@ function showKeyboardShortcuts() {
 const route = useRoute()
 const router = useRouter()
 
-// FIXME: this is really error prone
 // Reset the current project highlight in menu if the current route is not project related.
 watch(() => route.name as string, (routeName) => {
 	if (
@@ -138,8 +137,6 @@ watch(() => route.name as string, (routeName) => {
 		baseStore.handleSetCurrentProject({project: null})
 	}
 })
-
-// TODO: Reset the title if the page component does not set one itself
 
 useRenewTokenOnFocus()
 
@@ -200,28 +197,26 @@ onBeforeUnmount(() => {
 }
 
 .app-content {
-	--sidebar-width: #{$navbar-width};
+	--sidebar-width: 250px;
 
 	display: flow-root;
 	z-index: 10;
 	position: relative;
-	padding: 1.5rem 0.5rem 0;
-	// TODO refactor: DRY `transition-timing-function` with `./Navigation.vue`.
 	transition: margin-inline-start $transition-duration;
 
 	@media screen and (max-width: $tablet) {
-		margin-inline-start: 0;
+		margin-inline-start: 0 !important;
 		margin-inline-end: 0;
+		padding: calc(#{$navbar-height} + 0.75rem) 1rem 2rem 1rem;
 		min-block-size: calc(100vh - 4rem);
 	}
 
 	@media screen and (min-width: $tablet) {
-		padding: $navbar-height + 1.5rem 1.5rem 0 1.5rem;
-	}
+		padding: calc(#{$navbar-height} + 1rem) 1.5rem 2rem 1.5rem;
+		margin-inline-start: 0;
 
-	&.is-menu-enabled {
-		@media screen and (min-width: $tablet) {
-			margin-inline-start: var(--sidebar-width);
+		&.is-menu-enabled {
+			margin-inline-start: var(--sidebar-width, 250px) !important;
 		}
 	}
 
@@ -230,7 +225,6 @@ onBeforeUnmount(() => {
 		min-block-size: calc(100vh - #{$navbar-height + 1.5rem + 1rem});
 	}
 
-	// FIXME: This should be somehow defined inside Card.vue
 	.card {
 		background: var(--white);
 	}
@@ -260,7 +254,7 @@ onBeforeUnmount(() => {
 	position: fixed;
 	inset-block-end: calc(1rem - 4px);
 	inset-inline-end: 1rem;
-	z-index: 4500; // The modal has a z-index of 4000
+	z-index: 4500;
 	color: var(--grey-500);
 	transition: color $transition;
 
