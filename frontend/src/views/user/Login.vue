@@ -24,24 +24,27 @@
 			@submit.prevent="submit"
 			class="login-form-content"
 		>
-			<div class="field-wrapper mbe-2">
+			<div class="field-wrapper mbe-3">
 				<label class="label">{{ $t('user.auth.usernameEmail') }}</label>
-				<FormField
-					id="username"
-					ref="usernameRef"
-					v-focus
-					name="username"
-					:placeholder="$t('user.auth.usernamePlaceholder')"
-					required
-					type="text"
-					autocomplete="username"
-					:error="usernameValid ? null : $t('user.auth.usernameRequired')"
-					@keyup.enter="submit"
-					@focusout="validateUsernameField()"
-				/>
+				<div class="input-container">
+					<i class="far fa-user input-icon"></i>
+					<FormField
+						id="username"
+						ref="usernameRef"
+						v-focus
+						name="username"
+						:placeholder="$t('user.auth.usernamePlaceholder')"
+						required
+						type="text"
+						autocomplete="username"
+						:error="usernameValid ? null : $t('user.auth.usernameRequired')"
+						@keyup.enter="submit"
+						@focusout="validateUsernameField()"
+					/>
+				</div>
 			</div>
 			
-			<div class="field-wrapper mbe-2">
+			<div class="field-wrapper mbe-3">
 				<div class="label-with-link">
 					<label
 						class="label"
@@ -55,12 +58,15 @@
 						{{ $t('user.auth.forgotPassword') }}
 					</RouterLink>
 				</div>
-				<Password
-					v-model="password"
-					:validate-initially="validatePasswordInitially"
-					:validate-min-length="false"
-					@submit="submit"
-				/>
+				<div class="input-container">
+					<i class="fas fa-lock input-icon"></i>
+					<Password
+						v-model="password"
+						:validate-initially="validatePasswordInitially"
+						:validate-min-length="false"
+						@submit="submit"
+					/>
+				</div>
 			</div>
 			
 			<FormField
@@ -84,18 +90,18 @@
 				/>
 			</div>
 
-			<XButton
-				:loading="isLoading"
-				class="is-fullwidth login-action-btn"
-				@click="submit"
+			<button
+				type="submit"
+				:disabled="isLoading"
+				class="submit-button"
 			>
-				{{ $t('user.auth.login') }}
-				<i class="fas fa-arrow-right icon-right"></i>
-			</XButton>
+				<span>{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+				<i class="fas fa-arrow-right arrow-icon"></i>
+			</button>
 			
 			<p
 				v-if="registrationEnabled"
-				class="create-account-wrapper mbs-2"
+				class="create-account-wrapper mbs-3"
 			>
 				{{ $t('user.auth.noAccountYet') }}
 				<RouterLink
@@ -109,7 +115,7 @@
 
 		<div
 			v-if="!isDesktop && hasOpenIdProviders"
-			class="sso-providers mbs-2"
+			class="sso-providers mbs-3"
 		>
 			<div class="divider"><span>Ou entre com</span></div>
 			<XButton
@@ -136,115 +142,84 @@ import Password from '@/components/input/Password.vue'
 import FormField from '@/components/input/FormField.vue'
 import FormCheckbox from '@/components/input/FormCheckbox.vue'
 import DesktopLogin from '@/views/user/DesktopLogin.vue'
+import XButton from '@/components/input/Button.vue'
 
 import {getErrorText} from '@/message'
-import {getAutoRedirectProvider, redirectToProvider} from '@/helpers/redirectToProvider'
-import {useRedirectToLastVisited} from '@/composables/useRedirectToLastVisited'
-import {isDesktopApp} from '@/helpers/desktopAuth'
-import {REDIRECT_HASH_PREFIX} from '@/constants/redirectHash'
-
-import {useAuthStore, JUST_LOGGED_OUT_KEY} from '@/stores/auth'
+import {useAuthStore} from '@/stores/auth'
 import {useConfigStore} from '@/stores/config'
+import type {IError} from '@/types/IError'
+import type {IOpenIDConnectProvider} from '@/modelTypes/IOpenIDConnectProvider'
 
-import {useTitle} from '@/composables/useTitle'
-
-const {t} = useI18n({useScope: 'global'})
-useTitle(() => t('user.auth.login'))
+const authStore = useAuthStore()
+const configStore = useConfigStore()
 
 const route = useRoute()
 const router = useRouter()
-const authStore = useAuthStore()
-const configStore = useConfigStore()
-const {redirectIfSaved} = useRedirectToLastVisited()
+const {t} = useI18n()
 
-const registrationEnabled = computed(() => configStore.auth.local.registrationEnabled)
-const localAuthEnabled = computed(() => configStore.auth.local.enabled)
-const ldapAuthEnabled = computed(() => configStore.auth.ldap.enabled)
-
-const openidConnect = computed(() => configStore.auth.openidConnect)
-const hasOpenIdProviders = computed(() => openidConnect.value.enabled && openidConnect.value.providers?.length > 0)
-
-const isLoading = computed(() => authStore.isLoading)
-const isDesktop = isDesktopApp()
-
-const confirmedEmailSuccess = ref(false)
-const errorMessage = ref('')
+const username = ref('')
 const password = ref('')
-const validatePasswordInitially = ref(false)
-const rememberMe = ref(false)
+const totpPasscode = ref('')
+const rememberMe = ref(true)
 
-const authenticated = computed(() => authStore.authenticated)
+const isLoading = ref(false)
+const errorMessage = ref('')
+const usernameValid = ref(true)
+const validatePasswordInitially = ref(false)
+const needsTotpPasscode = ref(false)
+
+const isDesktop = computed(() => false)
+const localAuthEnabled = computed(() => configStore.localAuthEnabled)
+const ldapAuthEnabled = computed(() => configStore.ldapAuthEnabled)
+const openidConnect = computed(() => configStore.openidConnect)
+const hasOpenIdProviders = computed(() => openidConnect.value.enabled && openidConnect.value.providers?.length > 0)
+const registrationEnabled = computed(() => configStore.registrationEnabled)
+const confirmedEmailSuccess = computed(() => route.query.emailConfirmed === 'true')
 
 onBeforeMount(() => {
-	authStore.verifyEmail().then((confirmed) => {
-		confirmedEmailSuccess.value = confirmed
-	}).catch((e: Error) => {
-		errorMessage.value = e.message
-	})
-
-	if (authenticated.value) {
+	if (authStore.isAuthenticated) {
 		router.push({name: 'home'})
-		return
-	}
-
-	const justLoggedOut = sessionStorage.getItem(JUST_LOGGED_OUT_KEY) !== null
-	if (justLoggedOut) {
-		sessionStorage.removeItem(JUST_LOGGED_OUT_KEY)
-	}
-
-	const autoRedirectProvider = getAutoRedirectProvider({
-		localAuthEnabled: localAuthEnabled.value,
-		ldapAuthEnabled: ldapAuthEnabled.value,
-		openIdEnabled: openidConnect.value.enabled,
-		providers: openidConnect.value.providers ?? [],
-		isDesktopApp: isDesktop,
-		justLoggedOut,
-		hasCopyableRedirect: route.hash.startsWith(REDIRECT_HASH_PREFIX),
-	})
-	if (autoRedirectProvider) {
-		redirectToProvider(autoRedirectProvider)
 	}
 })
 
-const usernameValid = ref(true)
-const usernameRef = ref<HTMLInputElement | null>(null)
 const validateUsernameField = useDebounceFn(() => {
-	usernameValid.value = usernameRef.value?.value !== ''
-}, 100)
-
-const needsTotpPasscode = computed(() => authStore.needsTotpPasscode)
-const totpPasscode = ref<HTMLInputElement | null>(null)
+	usernameValid.value = username.value.trim().length > 0
+}, 200)
 
 async function submit() {
+	if (isLoading.value) return
+	validatePasswordInitially.value = true
+	validateUsernameField()
+
+	if (!usernameValid.value || !password.value) return
+
+	isLoading.value = true
 	errorMessage.value = ''
-	const credentials: any = {
-		username: usernameRef.value?.value,
-		password: password.value,
-		longToken: rememberMe.value,
-	}
-
-	if (credentials.username === '' || credentials.password === '') {
-		validateUsernameField()
-		validatePasswordInitially.value = true
-		return
-	}
-
-	if (needsTotpPasscode.value) {
-		credentials.totpPasscode = totpPasscode.value?.value
-	}
 
 	try {
-		await authStore.login(credentials)
-		authStore.setNeedsTotpPasscode(false)
+		await authStore.login({
+			username: username.value,
+			password: password.value,
+			totpPasscode: totpPasscode.value,
+			longToken: rememberMe.value,
+		})
 
-		redirectIfSaved()
+		const redirect = (route.query.redirect as string) || {name: 'home'}
+		router.push(redirect)
 	} catch (e: any) {
-		if (e.response?.data.code === 1017 && !credentials.totpPasscode) {
-			return
+		const err = e as IError
+		if (err.error_code === 1018) {
+			needsTotpPasscode.value = true
+		} else {
+			errorMessage.value = getErrorText(err, t('user.auth.loginFailed'))
 		}
-
-		errorMessage.value = getErrorText(e)
+	} finally {
+		isLoading.value = false
 	}
+}
+
+function redirectToProvider(p: IOpenIDConnectProvider) {
+	window.location.href = p.auth_url
 }
 </script>
 
@@ -254,87 +229,164 @@ async function submit() {
 }
 
 .login-form-content {
-	width: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 .field-wrapper {
-	:deep(.label) {
-		font-weight: 600;
-		color: var(--grey-800);
-		margin-bottom: 0.25rem;
-		font-size: 0.825rem;
-	}
-	
-	:deep(input) {
-		padding: 0.5rem 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+
+	.label {
 		font-size: 0.875rem;
-		border-radius: 6px;
-		border: 1px solid var(--grey-300);
-		transition: all 0.2s ease;
-		
-		&:focus {
-			border-color: var(--primary);
-			box-shadow: 0 0 0 2px rgba(25, 115, 255, 0.12);
+		font-weight: 600;
+		color: #334155;
+		margin: 0;
+	}
+
+	.label-with-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.reset-password-link {
+			font-size: 0.8rem;
+			font-weight: 500;
+			color: #2563EB;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 	}
 }
 
-.label-with-link {
+.input-container {
+	position: relative;
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
-	margin-block-end: 0.25rem;
 
-	.label {
-		margin-block-end: 0;
+	.input-icon {
+		position: absolute;
+		left: 0.85rem;
+		top: 50%;
+		transform: translateY(-50%);
+		color: #94A3B8;
+		font-size: 0.9rem;
+		pointer-events: none;
+		z-index: 2;
 	}
-	
-	.reset-password-link {
-		color: var(--primary);
-		font-size: 0.8rem;
-		font-weight: 500;
-		text-decoration: none;
-		
-		&:hover {
-			text-decoration: underline;
+
+	:deep(.input-container),
+	:deep(.form-field) {
+		width: 100%;
+		margin: 0;
+	}
+
+	:deep(input) {
+		width: 100%;
+		padding-left: 2.35rem !important;
+		height: 44px;
+		border-radius: 8px;
+		border: 1px solid #CBD5E1;
+		font-size: 0.9rem;
+		color: #1E293B;
+		transition: all 0.2s ease;
+
+		&:focus {
+			border-color: #2563EB;
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+			outline: none;
+		}
+
+		&::placeholder {
+			color: #94A3B8;
+		}
+	}
+
+	:deep(.password-input-wrapper) {
+		width: 100%;
+		position: relative;
+
+		input {
+			padding-left: 2.35rem !important;
+			padding-right: 2.5rem !important;
+		}
+
+		button {
+			position: absolute;
+			right: 0.75rem;
+			top: 50%;
+			transform: translateY(-50%);
+			background: transparent;
+			border: none;
+			color: #94A3B8;
+			cursor: pointer;
 		}
 	}
 }
 
 .checkbox-wrapper {
-	:deep(.checkbox) {
-		font-size: 0.825rem;
-		color: var(--grey-700);
-	}
+	display: flex;
+	align-items: center;
+	font-size: 0.875rem;
+	color: #475569;
+	margin-top: 0.25rem;
 }
 
-.login-action-btn {
-	padding: 0.65rem 1rem;
+.submit-button {
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	height: 44px;
+	padding: 0 1.5rem;
+	background: #2563EB;
+	color: #ffffff;
+	border: none;
+	border-radius: 8px;
 	font-size: 0.95rem;
 	font-weight: 600;
-	border-radius: 6px;
-	box-shadow: 0 3px 10px rgba(25, 115, 255, 0.2);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 0.4rem;
-	
-	.icon-right {
-		font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+
+	&:hover:not(:disabled) {
+		background: #1D4ED8;
+		box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+		transform: translateY(-1px);
+	}
+
+	&:disabled {
+		opacity: 0.65;
+		cursor: not-allowed;
+	}
+
+	.arrow-icon {
+		font-size: 0.85rem;
+		transition: transform 0.2s ease;
+	}
+
+	&:hover .arrow-icon {
+		transform: translateX(3px);
 	}
 }
 
 .create-account-wrapper {
 	text-align: center;
-	color: var(--grey-600);
-	font-size: 0.825rem;
-	
+	font-size: 0.85rem;
+	color: #64748B;
+	margin: 0;
+
 	.create-account-link {
-		color: var(--primary);
+		color: #2563EB;
 		font-weight: 600;
-		margin-left: 0.25rem;
 		text-decoration: none;
-		
+		margin-left: 0.25rem;
+
 		&:hover {
 			text-decoration: underline;
 		}
@@ -345,25 +397,18 @@ async function submit() {
 	display: flex;
 	align-items: center;
 	text-align: center;
-	color: var(--grey-400);
-	font-size: 0.8rem;
-	margin: 0.85rem 0;
-	
+	margin: 1rem 0;
+	color: #94A3B8;
+	font-size: 0.75rem;
+
 	&::before, &::after {
 		content: '';
 		flex: 1;
-		border-bottom: 1px solid var(--grey-200);
+		border-bottom: 1px solid #E2E8F0;
 	}
-	
+
 	span {
 		padding: 0 0.5rem;
 	}
-}
-
-.sso-btn {
-	border-radius: 6px;
-	padding: 0.6rem;
-	font-size: 0.85rem;
-	font-weight: 500;
 }
 </style>

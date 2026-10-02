@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import { useColorScheme } from '@/composables/useColorScheme'
-
-import LogoFull from '@/assets/logo-full.svg?component'
-import LogoFullWhite from '@/assets/logo-full-white.svg?component'
-import LogoIcon from '@/assets/logo.svg?component'
+import logoIconUrl from '@/assets/logo-icon.png'
 
 const props = withDefaults(defineProps<{
 	variant?: 'default' | 'white' | 'icon'
@@ -13,61 +9,64 @@ const props = withDefaults(defineProps<{
 	variant: 'default',
 })
 
-const authStore = useAuthStore()
 const { isDark } = useColorScheme()
-
-const CustomLogo = computed(() => {
-	const lightLogo = (window as any).CUSTOM_LOGO_URL
-	const darkLogo = (window as any).CUSTOM_LOGO_URL_DARK
-
-	if (!lightLogo && !darkLogo) return ''
-	if (!darkLogo) return lightLogo
-	if (!lightLogo) return darkLogo
-
-	return (props.variant === 'white' || isDark.value) ? darkLogo : lightLogo
-})
-
-const ActiveLogo = computed(() => {
-	if (props.variant === 'icon') {
-		return LogoIcon
-	}
-	if (props.variant === 'white' || isDark.value) {
-		return LogoFullWhite
-	}
-	return LogoFull
-})
+const isWhiteVariant = computed(() => props.variant === 'white' || isDark.value)
 </script>
 
 <template>
-	<div class="dataflow-logo-wrapper">
-		<component
-			:is="ActiveLogo"
-			v-if="!CustomLogo"
-			alt="Data Flow"
-			class="dataflow-brand-logo"
-		/>
-		<img
-			v-show="CustomLogo"
-			:src="CustomLogo"
-			alt="Data Flow"
-			class="dataflow-brand-logo"
-		>
+	<div class="dataflow-brand-logo" :class="{ 'is-white': isWhiteVariant, 'is-icon-only': variant === 'icon' }">
+		<img :src="logoIconUrl" alt="Data Flow" class="brand-symbol" />
+		<div v-if="variant !== 'icon'" class="brand-type">
+			<span class="type-data">Data</span>
+			<span class="type-flow">Flow</span>
+		</div>
 	</div>
 </template>
 
 <style lang="scss" scoped>
-.dataflow-logo-wrapper {
+.dataflow-brand-logo {
 	display: inline-flex;
 	align-items: center;
-	line-height: 1;
-}
+	gap: 0.7rem;
+	text-decoration: none;
+	user-select: none;
 
-.dataflow-brand-logo {
-	display: block;
-	max-inline-size: 180px;
-	max-block-size: 46px;
-	width: auto;
-	height: 38px;
-	object-fit: contain;
+	.brand-symbol {
+		height: 38px;
+		width: auto;
+		object-fit: contain;
+		display: block;
+		filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+	}
+
+	.brand-type {
+		display: flex;
+		align-items: baseline;
+		gap: 0.25rem;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+		font-weight: 800;
+		font-size: 1.65rem;
+		line-height: 1;
+		letter-spacing: -0.03em;
+
+		.type-data {
+			color: #0F172A;
+			transition: color 0.15s ease;
+		}
+
+		.type-flow {
+			background: linear-gradient(135deg, #00C6FF 0%, #7C3AED 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+	}
+
+	&.is-white {
+		.brand-type {
+			.type-data {
+				color: #FFFFFF;
+			}
+		}
+	}
 }
 </style>

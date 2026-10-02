@@ -8,9 +8,7 @@
 				<div class="image-panel-content">
 					<Logo
 						class="logo"
-						width="140"
-						height="38"
-						:dark="true"
+						variant="white"
 					/>
 					
 					<div class="hero-text">
@@ -49,6 +47,14 @@
 				tabindex="-1"
 				class="content-panel"
 			>
+				<div class="top-nav-lang">
+					<div class="lang-selector">
+						<span class="flag">🇧🇷</span>
+						<span class="lang-label">Português</span>
+						<i class="fas fa-chevron-down chevron"></i>
+					</div>
+				</div>
+
 				<div class="content-wrapper">
 					<div class="brand-header">
 						<h2 class="welcome-text">Bem-vindo ao</h2>
@@ -103,12 +109,15 @@ useTitle(() => title.value)
 
 <style lang="scss" scoped>
 .no-auth-wrapper {
-	background: #f0f4f9;
-	min-block-size: 100vh;
+	min-height: 100vh;
+	background: #EFF3F8;
+	background-image: 
+		radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.07) 0%, transparent 45%),
+		radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.07) 0%, transparent 45%);
 	display: flex;
-	place-items: center;
+	align-items: center;
 	justify-content: center;
-	padding: 1rem;
+	padding: 1.5rem 1rem;
 	box-sizing: border-box;
 
 	@media screen and (max-width: $tablet) {
@@ -117,101 +126,99 @@ useTitle(() => title.value)
 }
 
 .noauth-container {
-	max-inline-size: 880px;
-	inline-size: 100%;
+	max-width: 980px;
+	width: 100%;
 	display: flex;
 	background-color: #ffffff;
-	border-radius: 16px;
-	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+	border-radius: 20px;
+	box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.05);
 	overflow: hidden;
 	
 	@media screen and (max-width: $tablet) {
 		flex-direction: column;
-		border-radius: 12px;
+		border-radius: 14px;
 	}
 }
 
 .image-panel {
-	inline-size: 50%;
-	padding: 1.75rem 2rem;
+	width: 50%;
+	min-height: 580px;
+	padding: 2.5rem 2.25rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	background: linear-gradient(135deg, #0b1528 0%, #1e3a8a 100%);
 	position: relative;
-	overflow: hidden;
-
+	background: linear-gradient(180deg, rgba(8, 16, 40, 0.88) 0%, rgba(11, 22, 55, 0.72) 100%), url('@/assets/login_bg_mountains.jpg') center/cover no-repeat;
+	color: #ffffff;
+	
 	@media screen and (max-width: $tablet) {
-		display: none;
-	}
-
-	&::before {
-		content: "";
-		position: absolute;
-		top: 0; right: 0; bottom: 0; left: 0;
-		background: url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop") center/cover no-repeat;
-		opacity: 0.22;
-		mix-blend-mode: overlay;
-		pointer-events: none;
+		width: 100%;
+		min-height: auto;
+		padding: 2rem 1.5rem;
 	}
 
 	.image-panel-content {
-		position: relative;
-		z-index: 2;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		height: 100%;
 		justify-content: space-between;
 	}
 
 	.logo {
-		margin-bottom: 1rem;
-		filter: brightness(0) invert(1);
+		margin-bottom: 2.5rem;
 	}
 
 	.hero-text {
 		margin: auto 0;
-		padding: 0.75rem 0;
+	}
 
-		.image-title {
-			color: #ffffff;
-			font-size: 2.1rem;
-			font-weight: 800;
-			line-height: 1.15;
-			margin-bottom: 0.75rem;
-			letter-spacing: -0.02em;
+	.image-title {
+		font-size: 2.15rem;
+		font-weight: 800;
+		line-height: 1.2;
+		color: #ffffff;
+		margin-bottom: 1rem;
+		letter-spacing: -0.02em;
 
-			.highlight {
-				color: #00f2fe;
-			}
+		.highlight {
+			background: linear-gradient(135deg, #00D2FF 0%, #A855F7 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			display: inline-block;
 		}
+	}
 
-		.image-subtitle {
-			color: rgba(255, 255, 255, 0.85);
-			font-size: 0.875rem;
-			line-height: 1.45;
-			max-width: 95%;
-		}
+	.image-subtitle {
+		font-size: 0.95rem;
+		line-height: 1.55;
+		color: #CBD5E1;
+		max-width: 90%;
+		margin: 0;
 	}
 
 	.feature-chips {
 		display: flex;
-		flex-direction: column;
-		gap: 0.45rem;
-		margin-top: 1rem;
+		gap: 0.5rem;
+		margin-top: 2rem;
+
+		@media screen and (max-width: $desktop) {
+			flex-wrap: wrap;
+		}
 
 		.chip {
+			flex: 1;
 			display: flex;
 			align-items: center;
-			gap: 0.5rem;
-			background: rgba(255, 255, 255, 0.08);
-			border: 1px solid rgba(255, 255, 255, 0.15);
+			gap: 0.45rem;
+			padding: 0.55rem 0.6rem;
+			background: rgba(255, 255, 255, 0.12);
+			backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.18);
 			border-radius: 8px;
-			padding: 0.35rem 0.65rem;
-			color: white;
-			font-size: 0.78rem;
+			color: #ffffff;
+			font-size: 0.75rem;
 			font-weight: 500;
-			backdrop-filter: blur(8px);
+			white-space: nowrap;
 
 			.chip-icon {
 				display: flex;
@@ -219,9 +226,9 @@ useTitle(() => title.value)
 				justify-content: center;
 				width: 22px;
 				height: 22px;
-				border-radius: 5px;
 				background: rgba(255, 255, 255, 0.2);
-				font-size: 0.75rem;
+				border-radius: 5px;
+				font-size: 0.72rem;
 				flex-shrink: 0;
 			}
 		}
@@ -229,67 +236,86 @@ useTitle(() => title.value)
 }
 
 .content-panel {
-	inline-size: 50%;
+	width: 50%;
+	padding: 2rem 2.75rem 2.5rem 2.75rem;
 	display: flex;
 	flex-direction: column;
-	padding: 1.75rem 2rem;
-	background: #ffffff;
+	background-color: #ffffff;
 	position: relative;
-	overflow-y: auto;
-
-	@media screen and (max-width: $desktop) {
-		padding: 1.5rem 1.5rem;
+	
+	@media screen and (max-width: $tablet) {
+		width: 100%;
+		padding: 2rem 1.5rem;
 	}
 
-	@media screen and (max-width: $tablet) {
-		inline-size: 100%;
-		padding: 1.5rem 1.25rem;
+	.top-nav-lang {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1.25rem;
+
+		.lang-selector {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			padding: 0.35rem 0.65rem;
+			background: #F8FAFC;
+			border: 1px solid #E2E8F0;
+			border-radius: 8px;
+			font-size: 0.8rem;
+			font-weight: 500;
+			color: #475569;
+			cursor: default;
+
+			.flag {
+				font-size: 0.95rem;
+			}
+
+			.chevron {
+				font-size: 0.65rem;
+				color: #94A3B8;
+			}
+		}
 	}
 
 	.content-wrapper {
-		margin: auto;
-		max-width: 340px;
 		width: 100%;
-		display: flex;
-		flex-direction: column;
+		margin: auto 0;
 	}
 
 	.brand-header {
-		margin-bottom: 0.85rem;
+		margin-bottom: 1.5rem;
+
+		.welcome-text {
+			font-size: 1.15rem;
+			font-weight: 700;
+			color: #1E293B;
+			margin: 0 0 0.25rem 0;
+		}
+
+		.brand-text {
+			font-size: 2.35rem;
+			font-weight: 900;
+			line-height: 1.1;
+			letter-spacing: -0.02em;
+			margin: 0 0 0.5rem 0;
+			background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+
+		.welcome-subtext {
+			font-size: 0.875rem;
+			color: #64748B;
+			line-height: 1.45;
+			margin: 0;
+		}
 	}
 
-	.welcome-text {
-		font-size: 0.875rem;
-		color: var(--grey-600);
-		font-weight: 500;
-		margin-bottom: 0.1rem;
+	.legal-footer {
+		margin-top: 1.5rem;
+		text-align: center;
+		font-size: 0.75rem;
+		color: #94A3B8;
 	}
-
-	.brand-text {
-		font-size: 1.85rem;
-		font-weight: 800;
-		color: var(--primary);
-		margin-bottom: 0.25rem;
-		letter-spacing: -0.02em;
-		line-height: 1.1;
-	}
-
-	.welcome-subtext {
-		color: var(--grey-500);
-		font-size: 0.825rem;
-		line-height: 1.4;
-		margin-bottom: 0;
-	}
-}
-
-.legal-footer {
-	margin-top: 0.85rem;
-	text-align: center;
-	opacity: 0.65;
-	font-size: 0.75rem;
-}
-
-:deep(.logo) {
-	margin: 0 !important;
 }
 </style>
