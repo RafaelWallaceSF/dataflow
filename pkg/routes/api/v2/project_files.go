@@ -52,7 +52,16 @@ func RegisterProjectFileRoutes(api huma.API) {
 
 	tags := []string{"projects"}
 
-	Register(api, huma.Operation{
+		Register(api, huma.Operation{
+		OperationID: "project-files-update",
+		Summary:     "Update a project file",
+		Description: "Renames or moves a project-level file between folders. Requires write access to the project.",
+		Method:      http.MethodPatch,
+		Path:        "/projects/{project}/files/{file}",
+		Tags:        tags,
+	}, projectFilesUpdate)
+
+Register(api, huma.Operation{
 		OperationID: "project-files-list",
 		Summary:     "List a project's files",
 		Description: "Returns project-level file metadata, paginated. Requires read access to the project. The file bytes are not included; fetch them from the download endpoint.",
@@ -182,6 +191,32 @@ func projectFilesDelete(ctx context.Context, in *struct {
 	s := db.NewSession()
 	defer s.Close()
 	if err := models.DeleteProjectFile(s, a, in.ProjectID, in.FileID); err != nil {
+		_ = s.Rollback()
+		return nil, translateDomainError(err)
+	}
+	if err := s.Commit(); err != nil {
+		_ = s.Rollback()
+		return nil, translateDomainError(err)
+	}
+	return &emptyBody{}, nil
+}
+
+type projectFileUpdateInput struct {
+	ProjectID int64 `path:"project" doc:"The id of the project the file belongs to."`
+	FileID    int64 `path:"file" doc:"The id of the project file to update."`
+	RawBody   struct {
+		Name string `json:"name" doc:"The new name or folder path of the file."`
+	}
+}
+
+func projectFilesUpdate(ctx context.Context, in *projectFileUpdateInput) (*emptyBody, error) {
+	a, err := authFromCtx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	s := db.NewSession()
+	defer s.Close()
+	if err := models.MoveOrRenameProjectFile(s, a, in.ProjectID, in.FileID, in.RawBody.Name); err != nil {
 		_ = s.Rollback()
 		return nil, translateDomainError(err)
 	}

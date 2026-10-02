@@ -241,3 +241,23 @@ func DeleteProjectFile(s *xorm.Session, a web.Auth, projectID, projectFileID int
 	}
 	return err
 }
+
+// MoveOrRenameProjectFile moves or renames a project file.
+func MoveOrRenameProjectFile(s *xorm.Session, a web.Auth, projectID, projectFileID int64, newName string) error {
+	project := &Project{ID: projectID}
+	can, err := project.CanWrite(s, a)
+	if err != nil {
+		return err
+	}
+	if !can {
+		return ErrGenericForbidden{}
+	}
+
+	pf := &ProjectFile{ID: projectFileID, ProjectID: projectID}
+	if err := pf.ReadOne(s, a); err != nil {
+		return err
+	}
+
+	_, err = s.Where("id = ?", pf.FileID).Update(&files.File{Name: newName})
+	return err
+}

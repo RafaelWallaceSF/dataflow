@@ -63,13 +63,23 @@ export default class ProjectFileService extends AbstractService<IProjectFile> {
 
 	async download(model: IProjectFile) {
 		const url = await this.getProjectFileBlobUrl(model)
-		return downloadBlob(url, model.file.name)
+		const rawName = model.file?.name || 'documento'
+		const cleanName = rawName.includes('/') ? rawName.split('/').pop()! : rawName
+		return downloadBlob(url, cleanName)
 	}
 
-	async upload(model: IProjectFile, files: File[] | FileList) {
+	async getBlob(model: IProjectFile): Promise<Blob> {
+		const url = await this.getProjectFileBlobUrl(model)
+		const res = await this.http.get(url, {responseType: 'blob'})
+		return res.data
+	}
+
+	async upload(model: IProjectFile, files: File[] | FileList, folder: string = '') {
 		const data = new FormData()
+		const cleanFolder = folder.trim().replace(/^\/+|\/+$/g, '')
 		for (let i = 0; i < files.length; i++) {
-			data.append('files', files[i], files[i].name)
+			const finalName = cleanFolder ? `${cleanFolder}/${files[i].name}` : files[i].name
+			data.append('files', files[i], finalName)
 		}
 
 		const cancel = this.setLoading()
@@ -86,5 +96,15 @@ export default class ProjectFileService extends AbstractService<IProjectFile> {
 			this.uploadProgress = 0
 			cancel()
 		}
+	}
+
+	async move(model: IProjectFile, targetFolder: string) {
+		const rawName = model.file?.name || ''
+		const baseName = rawName.includes('/') ? rawName.split('/').pop()! : rawName
+		const cleanFolder = targetFolder.trim().replace(/^\/+|\/+$/g, '')
+		const newFullName = cleanFolder ? `${cleanFolder}/${baseName}` : baseName
+		const finalUrl = apiV2Url(`projects/${model.projectId}/files/${model.id}`)
+		const response = await this.http.patch(finalUrl, {name: newFullName})
+		return response.data
 	}
 }
